@@ -5,7 +5,6 @@ from flask import Flask, render_template, request, send_file
 from datetime import datetime, timedelta
 from io import BytesIO, StringIO
 from docx import Document  # For Word document processing
-import pypandoc
 import zipfile
 from reportlab.pdfgen import canvas
 
