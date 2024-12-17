@@ -7,6 +7,7 @@ from io import BytesIO, StringIO
 from docx import Document  # For Word document processing
 import pypandoc
 import zipfile
+from reportlab.pdfgen import canvas
 
 app = Flask(__name__)
 
@@ -165,15 +166,18 @@ def generate_pdf():
     sanitized_expiry_date = sk_expiry_date.replace(" ", "_")  # Replace spaces with underscores
     pdf_filename = f"{license_plate}_{vehicle_row['dealer_name']}_{sanitized_expiry_date}.pdf"
     pdf_path = f"output/{pdf_filename}"
+    c = canvas.Canvas(pdf_path, pagesize=A4)
 
-    # Convert the Word document to PDF
-    # Force pypandoc to download the bundled Pandoc version
-    try:
-        pypandoc.download_pandoc()
-        pypandoc.convert_file(word_path, 'pdf', outputfile=pdf_path)
-    except Exception as e:
-        print("PDF Conversion Error:", str(e))
-        return "PDF conversion failed", 500        
+    # Parse Word content and write it into PDF
+    y_position = 750  # Start position for text
+    for paragraph in template.paragraphs:
+        if y_position < 50:  # Add a new page when running out of space
+            c.showPage()
+            y_position = 750
+        c.drawString(100, y_position, paragraph.text)
+        y_position -= 20  # Move text down for next line
+
+    c.save()            
 
     # Log the record
     log_record = {
