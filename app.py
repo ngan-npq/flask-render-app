@@ -7,6 +7,7 @@ from io import BytesIO, StringIO
 from docx import Document  # For Word document processing
 import zipfile
 from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import A4  # Import A4 page size
 
 app = Flask(__name__)
 
@@ -168,11 +169,11 @@ def generate_pdf():
     c = canvas.Canvas(pdf_path, pagesize=A4)
 
     # Parse Word content and write it into PDF
-    y_position = 750  # Start position for text
+    y_position = 800  # Start position for text
     for paragraph in template.paragraphs:
         if y_position < 50:  # Add a new page when running out of space
             c.showPage()
-            y_position = 750
+            y_position = 800
         c.drawString(100, y_position, paragraph.text)
         y_position -= 20  # Move text down for next line
 
