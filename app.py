@@ -5,7 +5,7 @@ from flask import Flask, render_template, request, send_file
 from datetime import datetime, timedelta
 from io import BytesIO, StringIO
 from docx import Document  # For Word document processing
-from docx2pdf import convert
+import pypandoc
 import zipfile
 
 app = Flask(__name__)
@@ -167,7 +167,7 @@ def generate_pdf():
     pdf_path = f"output/{pdf_filename}"
 
     # Convert the Word document to PDF
-    convert(word_path, pdf_path)
+    pypandoc.convert_file(word_path, 'pdf', outputfile=pdf_path)
 
     # Log the record
     log_record = {
