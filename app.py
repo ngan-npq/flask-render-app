@@ -167,7 +167,13 @@ def generate_pdf():
     pdf_path = f"output/{pdf_filename}"
 
     # Convert the Word document to PDF
-    pypandoc.convert_file(word_path, 'pdf', outputfile=pdf_path)
+    # Force pypandoc to download the bundled Pandoc version
+    try:
+        pypandoc.download_pandoc()
+        pypandoc.convert_file(word_path, 'pdf', outputfile=pdf_path)
+    except Exception as e:
+        print("PDF Conversion Error:", str(e))
+        return "PDF conversion failed", 500        
 
     # Log the record
     log_record = {
