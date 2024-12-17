@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generate SK Document</title>
+
+    <!-- Include Select2 CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-rc.0/css/select2.min.css" rel="stylesheet" />
+</head>
+<body>
+    <h1>Generate SK Document</h1>
+    <form action="/generate_pdf" method="POST">
+        <!-- License Plate Dropdown -->
+        <label>License Plate:</label>
+        <select id="license_plate" name="license_plate" style="width: 300px;" required>
+            {% for plate in license_plates %}
+            <option value="{{ plate }}">{{ plate }}</option>
+            {% endfor %}
+        </select><br><br>
+
+        <!-- Internal/External Dropdown -->
+        <label>Internal/External:</label>
+        <select id="internal_external" name="internal_external" onchange="updateCollectionPIC()" required>
+            <option value="Internal">Internal</option>
+            <option value="External">External</option>
+        </select><br><br>
+
+        <!-- Collection PIC Dropdown -->
+        <label>Collection PIC:</label>
+        <select id="collection_pic" name="collection_pic" style="width: 300px;" required></select><br><br>
+
+        <!-- Your Name -->
+        <label>Your Name:</label>
+        <input type="text" name="user_name" required><br><br>
+
+        <button type="submit">Generate Document</button>
+    </form>
+
+    <!-- Include jQuery and Select2 JS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-rc.0/js/select2.min.js"></script>
+
+    <script>
+        const internalPics = {{ internal_pics|tojson }};
+        const externalPics = {{ external_pics|tojson }};
+
+        function updateCollectionPIC() {
+            const collectionPIC = $("#collection_pic");
+            const selection = document.getElementById("internal_external").value;
+
+            collectionPIC.empty();
+
+            const picList = selection === "Internal" ? internalPics : externalPics;
+
+            picList.forEach(pic => {
+                collectionPIC.append(new Option(pic, pic));
+            });
+
+            collectionPIC.trigger('change');  // Refresh Select2
+        }
+
+        // Initialize Select2 for dropdowns
+        $(document).ready(function() {
+            $('#license_plate').select2({
+                placeholder: "Select a License Plate",
+                allowClear: true
+            });
+
+            $('#collection_pic').select2({
+                placeholder: "Select a Collection PIC",
+                allowClear: true
+            });
+
+            updateCollectionPIC();
+        });
+    </script>
+</body>
+</html>
